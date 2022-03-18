@@ -51,6 +51,13 @@ body {
 .btn-outline-info {
     border-radius: 1rem;
 }
-    .btn-outline-info:hover {
-        font-size: 18px;
-    }
+
+.btn-outline-info:hover {
+    font-size: 18px;
+}
+
+.fa-trash:hover {
+    font-size: 20px;
+    color: lightcoral;
+    cursor: pointer;
+}

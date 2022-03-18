@@ -15,12 +15,12 @@ namespace Huskar.Services
 
         public async Task<int> GetPageCount()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.themoviedb.org/3/movie/top_rated?api_key={token}&language=en-US");
             var client = new HttpClient();
-            var response = await client.SendAsync(request);
+            var url = $"https://api.themoviedb.org/3/movie/top_rated?api_key={token}&language=en-US";
+
+            var response = await client.GetAsync(url);
             var buffer = await response.Content.ReadAsStringAsync();
 
-            List<MovieModel> list = new List<MovieModel>();
             var obj = JObject.Parse(buffer);
             int n = int.Parse(obj["total_pages"].ToString());
             return n;
@@ -91,9 +91,38 @@ namespace Huskar.Services
             return obj;
         }
 
+        public async Task<int> UpcomingPages()
+        {
+            var client = new HttpClient();
+            var url = $"https://api.themoviedb.org/3/movie/upcoming?api_key={token}&language=en-US";
+            var response = await client.GetAsync(url);
+            var buffer = await response.Content.ReadAsStringAsync();
+
+            var obj = JObject.Parse(buffer);
+            int n = int.Parse(obj["total_pages"].ToString());
+            return n;
+        }
+
+        public async Task<MovieModel[]> GetUpcoming(int page)
+        {
+            var client = new HttpClient();
+            string str = $"https://api.themoviedb.org/3/movie/upcoming?api_key={token}&language=en-US&page={page}";
+            
+            var response = await client.GetAsync(str);
+            var buffer = await response.Content.ReadAsStringAsync();
+
+            var list = new List<MovieModel>();
+            var obj = JObject.Parse(buffer);
+
+            var array = JsonConvert.DeserializeObject<MovieModel[]>(obj["results"].ToString());
+            list.AddRange(array);
+
+            return list.ToArray();
+        }
+
         public async Task<MovieModel[]> GetRated(int page)
         {
-            string str = $"https://api.themoviedb.org/3/movie/top_rated?api_key={token}&language=en-USpage={page}";
+            string str = $"https://api.themoviedb.org/3/movie/top_rated?api_key={token}&language=en-US&page={page}";
             var request = new HttpRequestMessage(HttpMethod.Get, str);
             var client = new HttpClient();
             var response = await client.SendAsync(request);

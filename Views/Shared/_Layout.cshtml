@@ -38,12 +38,13 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        <li class="nav-item dropdown">
+                              <a class="nav-link dropdown-toggle text-light" href="#" role="button" aria-expanded="false" data-bs-toggle="dropdown">Movies</a>
+                              <ul class="dropdown-menu bg-dark">
+                                <li><a class="dropdown-item" href="/Home/"><b>Latest</b></a></li>
+                                <li><a class="dropdown-item" href="/Home/TopRated"><b>Top Rated</b></a></li>
+                              </ul>
+                        </li>&nbsp;
                         <li class="nav-item dropdown">
                            <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 @if (user != null)
@@ -72,10 +73,17 @@
                           </ul>
                         </li>
                     </ul>
-                      <form class="d-flex">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn alert-info btn-sm" type="submit"><span class="fa fa-search"></span></button>
-                      </form>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <form action="/Home/Results" class="d-flex" method="get">
+                                <input class="form-control me-2" name="name" type="search" placeholder="Search" aria-label="Search">
+                                <button class="btn alert-info btn-sm" type="submit"><span class="fa fa-search"></span></button>
+                            </form>
+                        </li>
+                        &nbsp;&nbsp;
+                        <li class="nav-item">
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

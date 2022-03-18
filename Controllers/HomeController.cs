@@ -1,4 +1,6 @@
-﻿using Huskar.Models;
+﻿using Huskar.Data;
+using Huskar.Models;
+using Huskar.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,16 +8,48 @@ namespace Huskar.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private MovieContext db;
+        private MovieService ms;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(MovieContext db, MovieService ms)
         {
-            _logger = logger;
+            this.db = db;
+            this.ms = ms;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? page)
+        {
+            ViewData["pages"] = await ms.UpcomingPages();
+            int result = 1;
+
+            if (page != null) result = page.Value;
+            ViewData["pageid"] = result;
+
+            var array = await ms.GetUpcoming(result);
+            return View(array);
+        }
+
+        public IActionResult Results(string name)
         {
             return View();
+        }
+
+        public async Task<IActionResult> TopRated(int? page)
+        {
+            ViewData["pages"] = await ms.GetPageCount();
+            int result = 1;
+
+            if (page != null) result = page.Value;
+            ViewData["pageid"] = result;
+
+            var array = await ms.GetRated(result);
+            return View(array);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var obj = await ms.GetDetails(id);
+            return View(obj);
         }
 
         public IActionResult Privacy()

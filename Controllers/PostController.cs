@@ -45,22 +45,10 @@ namespace Huskar.Controllers
 
                 db.Posts.Add(post);
                 await db.SaveChangesAsync();
+                return Created("Post/Post", post);
             }
 
-            var all = (from p in await db.Posts.ToListAsync()
-                       join u in db.Users.ToList()
-                        on p.UserId equals u.Id
-                       where p.MovieId == MovieId
-                       select new PostMessage
-                       {
-                           Id = p.Id,
-                           Name = u.Name,
-                           Message = p.Message,
-                           Date = p.Date,
-                           Profile = u.Profile,
-                           MovieId = p.MovieId
-                       }).ToList();
-            return Ok(all);
+            return Ok();
         }
 
         [HttpDelete]

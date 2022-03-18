@@ -1,17 +1,18 @@
 ﻿@model MovieModel[]
 
 @{
-    ViewData["Title"] = "Latest";
+    #pragma warning disable
+    ViewData["Title"] = "Search Results";
     int page_id = int.Parse(ViewData["pageid"].ToString());
     int pages = int.Parse(ViewData["pages"].ToString());
 }
 
 <div class="jumbotron" style="background-color:#1C1C1C;">
-   <h4 style="color:white;" class="text-sm-start">  Latest Movies</h4>
+   <h4 style="color:white;" class="text-sm-start">  Search Results</h4>
    <div class="list-group">
         @foreach(var t in Model)
         {
-                <a href="/Movie/Details?id=@t.id" class="list-group-item list-group-item-action">
+                <a href="/Home/Details?id=@t.id" class="list-group-item list-group-item-action">
                   <div class="row">
                       <div class="col">
                          <img src="https://image.tmdb.org/t/p/w500/@t.poster_path" height="120" width="100" style="margin-top: 30px;margin-left:30px;margin-right:20px;" />
@@ -26,14 +27,14 @@
    </div>
    <div class="row">
        <div class="col-4"></div>
-       <div class="col-4"></div>
-       <div class="col-4">
+       <div class="col-6"></div>
+       <div class="col-2">
            @if(page_id > 1) {
-             <a class="btn btn-outline-secondary btn-sm" href="/Movie/Top_rated?page=@(page_id - 1)"> &lt;&lt; </a>
+             <a class="btn btn-outline-secondary btn-sm" href="/Home/?page=@(page_id - 1)"> &lt;&lt; </a>
            }
            <strong class="text-info text-sm-center">@page_id / @pages</strong>
            @if(page_id < pages) {
-             <a class="btn btn-outline-secondary btn-sm" href="/Movie/Top_rated?page=@(page_id + 1)">&gt;&gt;</a>
+             <a class="btn btn-outline-secondary btn-sm" href="/Home/?page=@(page_id + 1)">&gt;&gt;</a>
            }
        </div>
    </div>

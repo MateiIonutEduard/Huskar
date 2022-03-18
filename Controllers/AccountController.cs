@@ -1,5 +1,6 @@
 ﻿using Facebook;
 using Huskar.Data;
+using Huskar.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
@@ -16,12 +17,8 @@ namespace Huskar.Controllers
     public class AccountController : Controller
     {
         private MovieContext db;
-        private IConfiguration config;
-        public AccountController(IConfiguration config, MovieContext db)
-        { 
-            this.db = db;
-            this.config = config;
-        }
+        public AccountController(MovieContext db)
+        { this.db = db; }
 
         [HttpGet, Route("/me")]
         public async Task<IActionResult> GetUser(string name, int auth)
@@ -84,17 +81,6 @@ namespace Huskar.Controllers
             return Challenge(properties, FacebookDefaults.AuthenticationScheme);
         }
 
-        private async Task<string> GetAccessToken()
-        {
-            var client = new HttpClient();
-            var app_id = config["Facebook:AppId"];
-            var app_secret = config["Facebook:AppSecret"];
-            var res = await client.GetAsync($"https://graph.facebook.com/oauth/access_token?client_id={app_id}&client_secret={app_secret}&grant_type=client_credentials");
-            var str = await res.Content.ReadAsStringAsync();
-            dynamic obj = JsonConvert.DeserializeObject(str);
-            return obj.access_token.ToString();
-        }
-
         [Route("/facebook-response")]
         public async Task<IActionResult> FacebookResponse()
         {
@@ -118,7 +104,7 @@ namespace Huskar.Controllers
                 await db.SaveChangesAsync();
             }
 
-            return RedirectToAction("Latest", "Movie");
+            return RedirectToAction("TopRated", "Home");
         }
 
         [Route("/signout")]

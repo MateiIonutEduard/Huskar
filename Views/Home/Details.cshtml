@@ -144,7 +144,7 @@
             <div class="container" style="border: 2px solid #dedede; background-color: #f1f1f1; border-radius: 5px; padding: 10px; margin: 40px 0;">
                 <div class="row">
                     <div class="col-sm-3">
-                        <img class="rounded-circle" src="@posts[k].Profile" alt="@posts[k].Name" width="24" height="24">
+                        <img class="rounded-circle" src="@posts[k].Profile" alt="@posts[k].Name" width="24" height="24" />
                         <strong>@posts[k].Name</strong>
                     </div>
                     <div class="col-sm-7">
@@ -152,6 +152,9 @@
                     </div>
                     <div class="col-sm-2">
                         <span class="time-right">@posts[k].Date.ToString("MM/dd/yyyy h:mm tt")</span>
+                        <a class="nav-link time-right" onclick="removePost(@posts[k].Id)">
+                            <i class="fa fa-trash text-danger" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -160,7 +163,7 @@
            <div class="container darker" style="border-color:#ccc; background-color:#ddd;">
                 <div class="row">
                     <div class="col-sm-3">
-                        <img class="rounded-circle" src="@posts[k].Profile" alt="@posts[k].Name" width="24" height="24">
+                        <img class="rounded-circle" src="@posts[k].Profile" alt="@posts[k].Name" width="24" height="24" />
                         <strong>@posts[k].Name</strong>
                     </div>
                     <div class="col-sm-7">
@@ -168,21 +171,24 @@
                     </div>
                     <div class="col-sm-2">
                         <span class="time-right">@posts[k].Date.ToString("MM/dd/yyyy h:mm tt")</span>
+                        <a class="nav-link time-right" onclick="removePost(@posts[k].Id)">
+                            <i class="fa fa-trash text-danger" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         }
     }
-</div></br>
+</div><br/>
 @if(user != null) {
     <div class="container" style="background-color: white;">
         <form id="sender" method="post">
             <div class="row">
                 <div class="col-sm-11">
-                    <input type="text" class="form-control form-rounded" placeholder="Text input">
+                    <input type="text" id="texting" class="form-control form-rounded" placeholder="Text input">
                 </div>
                 <div class="col-sm-1">
-                    <button class="btn btn-outline-info btn-sm">
+                    <button class="btn btn-outline-info btn-sm" onclick="postMessage(@user.Id)">
                         <i class="fa fa-paper-plane text-success" aria-hidden="true"></i>
                     </button>
                 </div>
