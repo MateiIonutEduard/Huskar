@@ -1,0 +1,192 @@
+﻿@using Huskar.Data
+@using Newtonsoft.Json
+@model MovieBuffer
+
+@{
+    #pragma warning disable
+    ViewData["Title"] = Model.title;
+    var people = Model.people;
+
+    var client = new HttpClient();
+    string name = User.Identity.Name;
+    string profile = User.Claims.FirstOrDefault(c => c.Type.Contains("urn:google:picture"))
+               ?.Value;
+
+    int auth = 1;
+    if (!string.IsNullOrEmpty(profile)) auth = 2;
+    var res = await client.GetAsync($"https://localhost:7183/me?name={name}&auth={auth}");
+    string str = await res.Content.ReadAsStringAsync();
+    User user = null;
+
+    if (res.StatusCode == System.Net.HttpStatusCode.OK)
+      user = JsonConvert.DeserializeObject<User>(str);
+}
+
+<div class="container-fluid" style="background-color: lightgray;">
+    <div class="row">
+        <div class="col-sm-3">
+            <br/>
+            <img src="https://image.tmdb.org/t/p/w500/@Model.posters[0]" width="280" height="260"/>
+            <strong style="padding-left: 15%;">@Model.title</strong>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-9">
+                    <br/>
+                    <strong class="text-black" style="padding-left: 25%; padding-top: 5%;">Overview</strong>
+                  <p style="color: black; padding-left: 25%; padding-top: 5%;">@Model.overview</p>
+                </div>
+                <div class="col-sm-1">
+                        <p style="padding-top: 25%; text-align:right;"><b class="text-success">@Model.release_date.ToString()</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><br />
+<div class="container-fluid" style="background-color: lightgray;">
+    <div id="cards" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+        <div class="row">
+            @for(int j = 0; j < 3; j++) {
+               @if (j >= people.Length) break;
+               <div class="col-sm-4 mb-3">
+                   <center><div class="card" style="background-color: #7F7F7F;">
+                      <a href="https://www.themoviedb.org/person/@people[j].id">
+                          @if(!string.IsNullOrEmpty(people[j].profile_path)) {
+                                            <img loading="lazy" class="profile" src="https://www.themoviedb.org/t/p/w138_and_h175_face/@people[j].profile_path" alt="@people[j].name" />
+                                        } else
+                                        {
+                                            <img loading="lazy" width="138" height="175" class="profile" src="/users.png" alt="@people[j].name" />
+                                        }
+                                    </a>
+                      <p><a class="nav-link text-info" href="https://www.themoviedb.org/person/@people[j].id">@people[j].name</a></p>
+                      <p class="character"><b class="nav-link text-danger">@people[j].character</b></p>
+                   </div></center>
+               </div>
+           }
+       </div>
+    </div>
+    @for(int k = 3; k < people.Length; k += 3) {
+         <div class="carousel-item">
+             <div class="row">
+             @for(int j = k; j < k + 3; j++) {
+                            @if (j >= people.Length) break;
+                            <div class="col-sm-4 mb-3">
+               <center><div class="card" style="background-color: #7F7F7F;">
+                   <a href="https://www.themoviedb.org/person/@people[j].id">
+                       @if(!string.IsNullOrEmpty(people[j].profile_path)) {
+                                                <img loading="lazy" class="profile" src="https://www.themoviedb.org/t/p/w138_and_h175_face/@people[j].profile_path" alt="@people[j].name" />
+                                            } else
+                                            {
+                                              <img loading="lazy" width="138" height="175" class="profile" src="/users.png" alt="@people[j].name" />
+                                            }
+                                        </a>
+                   <p><a class="nav-link text-info" href="https://www.themoviedb.org/person/@people[j].id">@people[j].name</a></p>
+                   <p class="character"><b class="nav-link text-danger">@people[j].character</b></p>
+               </div></center>
+            </div>
+         }
+         </div>
+  </div>
+  }
+  <button class="carousel-control-prev" type="button" data-bs-target="#cards" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#cards" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+</div>
+</div><br/>
+<div class="container-fluid" style="background-color: lightgray;">
+    <center>
+    <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false" data-bs-interval="false">
+  <div class="carousel-inner">
+      <div class="carousel-item active">
+          <img src="https://image.tmdb.org/t/p/w500/@Model.backdrops[0]" class="d-block w-100" width="400" height="500">
+      </div>
+      @for(int k = 1; k < Model.backdrops.Count(); k++) {
+            <div class="carousel-item">
+                <img src="https://image.tmdb.org/t/p/w500/@Model.backdrops[k]" class="d-block w-100" width="400" height="500">
+            </div>
+      }
+      @foreach(var poster in Model.posters) {
+            <div class="carousel-item">
+                <img src="https://image.tmdb.org/t/p/w500/@poster" class="d-block w-100" width="400" height="500">
+            </div>
+      }
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsNoTouching" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+</center>
+</div>
+<div class="overflow-auto">
+    @{
+        res = await client.GetAsync($"https://localhost:7183/Post/Posts?MovieId={Model.id}");
+        string data = await res.Content.ReadAsStringAsync();
+        var posts = JsonConvert.DeserializeObject<PostMessage[]>(data);
+    }
+
+    @for(int k = 0; k < posts.Length; k++)
+    {
+        @if((k & 1) == 0)
+        {
+            <div class="container" style="border: 2px solid #dedede; background-color: #f1f1f1; border-radius: 5px; padding: 10px; margin: 40px 0;">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <img class="rounded-circle" src="@posts[k].Profile" alt="@posts[k].Name" width="24" height="24">
+                        <strong>@posts[k].Name</strong>
+                    </div>
+                    <div class="col-sm-7">
+                        <p>@posts[k].Message</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <span class="time-right">@posts[k].Date.ToString("MM/dd/yyyy h:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+        } else
+        {
+           <div class="container darker" style="border-color:#ccc; background-color:#ddd;">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <img class="rounded-circle" src="@posts[k].Profile" alt="@posts[k].Name" width="24" height="24">
+                        <strong>@posts[k].Name</strong>
+                    </div>
+                    <div class="col-sm-7">
+                        <p>@posts[k].Message</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <span class="time-right">@posts[k].Date.ToString("MM/dd/yyyy h:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div></br>
+@if(user != null) {
+    <div class="container" style="background-color: white;">
+        <form id="sender" method="post">
+            <div class="row">
+                <div class="col-sm-11">
+                    <input type="text" class="form-control form-rounded" placeholder="Text input">
+                </div>
+                <div class="col-sm-1">
+                    <button class="btn btn-outline-info btn-sm">
+                        <i class="fa fa-paper-plane text-success" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+}

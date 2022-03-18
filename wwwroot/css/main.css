@@ -1,0 +1,56 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.list-group {
+    max-height: 500px;
+    margin-bottom: 10px;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.list-group-item-action:hover {
+    background-color: lightblue;
+    color: black;
+}
+
+#carouselExampleControlsNoTouching {
+    width: 60%;
+    height: 50%;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.time-left {
+    float: left;
+    color: #999;
+}
+
+.form-rounded {
+    border-radius: 1rem;
+}
+
+.btn-outline-info {
+    border-radius: 1rem;
+}
+    .btn-outline-info:hover {
+        font-size: 18px;
+    }

@@ -1,0 +1,99 @@
+﻿@using Newtonsoft.Json
+@using Huskar.Data
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Huskar</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Huskar.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+</head>
+<body>
+    @{
+        #pragma warning disable
+        var client = new HttpClient();
+        string name = User.Identity.Name;
+        string profile = User.Claims.FirstOrDefault(c => c.Type.Contains("urn:google:picture"))
+               ?.Value;
+
+        int auth = 1;
+        if (!string.IsNullOrEmpty(profile)) auth = 2;
+        var res = await client.GetAsync($"https://localhost:7183/me?name={name}&auth={auth}");
+        string str = await res.Content.ReadAsStringAsync();
+        User user = null;
+
+        if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            user = JsonConvert.DeserializeObject<User>(str);
+    }
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">Huskar</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                           <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if (user != null)
+                                {
+                                    <img class="rounded-circle" src="@user.Profile" width = "32" height="32"/> <b class="text-light">@user.Name</b>
+                                } else
+                                {
+                                    <i class="fa fa-users text-light"></i> <b class="text-light"> Guest</b>
+                                }
+                            </a>
+                          <ul class="dropdown-menu bg-dark" aria-labelledby="navbarScrollingDropdown">
+                                @if (user == null)
+                                {
+                                    <li><a class="dropdown-item text-info" href="/facebook-login">
+                                            <i class="fa fa-brands fa-facebook-f text-info"></i>&nbsp; Facebook
+                                        </a></li>
+                                    <li><a class="dropdown-item text-warning" href="/GoogleLogin">
+                                            <i class="fa fa-brands fa-google text-warning"></i>&nbsp; Google
+                                        </a></li>
+                                }
+                                else {
+                                  <li><a class="dropdown-item text-danger" href="/signout">
+                                     <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp; Sign Out
+                                     </a></li>
+                                }
+                          </ul>
+                        </li>
+                    </ul>
+                      <form class="d-flex">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn alert-info btn-sm" type="submit"><span class="fa fa-search"></span></button>
+                      </form>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - Huskar - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/main.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
