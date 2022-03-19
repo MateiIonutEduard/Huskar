@@ -38,6 +38,9 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
                         <li class="nav-item dropdown">
                               <a class="nav-link dropdown-toggle text-light" href="#" role="button" aria-expanded="false" data-bs-toggle="dropdown">Movies</a>
                               <ul class="dropdown-menu bg-dark">
@@ -94,10 +97,12 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - Huskar - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top footer text-muted bg-dark">
+        <center>
+        <div class="container text-light">
+            &copy; 2022 - Huskar - <a asp-area="" style="text-decoration: none;" class="text-info" asp-controller="Home" asp-action="Privacy"><b>Privacy</b></a>
         </div>
+        </center>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

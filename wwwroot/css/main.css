@@ -61,3 +61,13 @@ body {
     color: lightcoral;
     cursor: pointer;
 }
+
+.alert {
+    width: 80%;
+    height: 80%;
+    margin-left: 10%;
+} 
+
+body {
+    background-color: #aaa
+}

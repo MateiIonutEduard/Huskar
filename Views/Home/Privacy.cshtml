@@ -1,6 +1,14 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
-
-<p>Use this page to detail your site's privacy policy.</p>
+<h1><b class="text-secondary">@ViewData["Title"]</b></h1>
+<hr class="bg-danger border-2 border-top border-danger">
+<div class="container-fluid" style="background-color: lightgray;"><br/>
+    <div class="alert alert-secondary" role="alert">
+      <strong class="text-dark">User authentication is done externally, based on social media accounts (Facebook & Google)</strong><br/>
+        <strong class="text-dark">Movie data is not stored in the database, it is retrieved using the existing API.</strong><br/>
+        <strong class="text-dark">No passwords or other sensitive data are stored in the database of users connected<br/>
+       through Facebook and Google accounts.</strong>
+    </div>
+    <hr class="bg-danger border-2 border-top" style="background-color: lightgray;">
+</div>
