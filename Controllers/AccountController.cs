@@ -1,5 +1,4 @@
-﻿using Facebook;
-using Huskar.Data;
+﻿using Huskar.Data;
 using Huskar.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

@@ -17,22 +17,23 @@ builder.Services.AddDbContext<MovieContext>(options =>
             new MySqlServerVersion(new Version(10, 4, 22))
             ));
 
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-           .AddGoogle(options =>
-           {
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddGoogle(options =>
+            {
                IConfigurationSection googleAuthNSection =
                config.GetSection("Google");
                options.ClientId = googleAuthNSection["ClientId"];
                options.ClientSecret = googleAuthNSection["ClientSecret"];
                options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-           })
+            })
            .AddCookie(options =>
            {
-               options.LoginPath = "/account/facebook-login";
+               options.LoginPath = "/Account/facebook-login";
+               options.LogoutPath = "/Account/signout";
            })
            .AddFacebook(options =>
            {
