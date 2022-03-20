@@ -7,6 +7,7 @@
         public string Message { get; set; }
         public DateTime Date { get; set; }
         public string Profile { get; set; }
+        public int UserId { get; set; }
         public int MovieId { get; set; }
     }
 }

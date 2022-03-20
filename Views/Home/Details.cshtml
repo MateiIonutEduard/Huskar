@@ -14,6 +14,7 @@
 
     int auth = 1;
     if (!string.IsNullOrEmpty(profile)) auth = 2;
+    else if (User.Identity.AuthenticationType?.CompareTo("Instagram") == 0) auth = 3;
     var res = await client.GetAsync($"https://localhost:7183/me?name={name}&auth={auth}");
     string str = await res.Content.ReadAsStringAsync();
     User user = null;
@@ -22,6 +23,7 @@
       user = JsonConvert.DeserializeObject<User>(str);
 }
 
+<hr class="bg-danger border-2 border-top" style="visibility: hidden;">
 <div class="container-fluid" style="background-color: lightgray;">
     <div class="row">
         <div class="col-sm-3">
@@ -152,9 +154,12 @@
                     </div>
                     <div class="col-sm-2">
                         <span class="time-right">@posts[k].Date.ToString("MM/dd/yyyy h:mm tt")</span>
-                        <a class="nav-link time-right" onclick="removePost(@posts[k].Id)">
-                            <i class="fa fa-trash text-danger" aria-hidden="true"></i>
-                        </a>
+                        @if (user != null && posts[k].UserId == user.Id)
+                        {
+                            <a class="nav-link time-right" onclick="removePost(@posts[k].Id)">
+                                <i class="fa fa-trash text-danger" aria-hidden="true"></i>
+                            </a>
+                        }
                     </div>
                 </div>
             </div>
@@ -171,9 +176,12 @@
                     </div>
                     <div class="col-sm-2">
                         <span class="time-right">@posts[k].Date.ToString("MM/dd/yyyy h:mm tt")</span>
-                        <a class="nav-link time-right" onclick="removePost(@posts[k].Id)">
-                            <i class="fa fa-trash text-danger" aria-hidden="true"></i>
-                        </a>
+                        @if (user != null && posts[k].UserId == user.Id)
+                        {
+                            <a class="nav-link time-right" onclick="removePost(@posts[k].Id)">
+                                <i class="fa fa-trash text-danger" aria-hidden="true"></i>
+                            </a>
+                        }
                     </div>
                 </div>
             </div>
@@ -181,18 +189,19 @@
     }
 </div><br/>
 @if(user != null) {
-    <div class="container" style="background-color: white;">
+    <div class="container" style="background-color: #aaa;">
         <form id="sender" method="post">
             <div class="row">
                 <div class="col-sm-11">
                     <input type="text" id="texting" class="form-control form-rounded" placeholder="Text input">
                 </div>
-                <div class="col-sm-1">
-                    <button class="btn btn-outline-info btn-sm" onclick="postMessage(@user.Id)">
+                <div class="col-sm-1" style="margin-right: -12%;">
+                    <button class="btn btn-outline-info btn-md" onclick="postMessage(@user.Id)">
                         <i class="fa fa-paper-plane text-success" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
         </form>
+        <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
     </div>
 }

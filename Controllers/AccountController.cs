@@ -23,6 +23,9 @@ namespace Huskar.Controllers
         [Route("/signin-instagram")]
         public async Task InstagramLogin()
         {
+            if(User.Identity.IsAuthenticated)
+                await HttpContext.SignOutAsync();
+
             await HttpContext.ChallengeAsync("Instagram", new AuthenticationProperties
             {
                 RedirectUri = Url.Action("Redirect")
@@ -65,7 +68,7 @@ namespace Huskar.Controllers
                 {
                     Name = name,
                     Profile = picture,
-                    AuthModel = 1
+                    AuthModel = 3
                 };
 
                 db.Users.Add(user);
@@ -89,6 +92,9 @@ namespace Huskar.Controllers
         [Route("/GoogleLogin")]
         public async Task GoogleLogin()
         {
+            if (User.Identity.IsAuthenticated)
+                await HttpContext.SignOutAsync();
+
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
             {
                 RedirectUri = Url.Action("GoogleResponse")
@@ -130,8 +136,10 @@ namespace Huskar.Controllers
         }
 
         [Route("/facebook-login")]
-        public IActionResult FacebookLogin()
+        public async Task<IActionResult> FacebookLogin()
         {
+            if (User.Identity.IsAuthenticated)
+                await HttpContext.SignOutAsync();
             var properties = new AuthenticationProperties { RedirectUri = Url.Action("FacebookResponse") };
             return Challenge(properties, FacebookDefaults.AuthenticationScheme);
         }
@@ -167,7 +175,9 @@ namespace Huskar.Controllers
         [Route("/signout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync();
+            if (User.Identity.IsAuthenticated)
+                await HttpContext.SignOutAsync();
+
             return RedirectToAction("Index", "Home");
         }
     }

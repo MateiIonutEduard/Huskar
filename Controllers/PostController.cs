@@ -23,7 +23,8 @@ namespace Huskar.Controllers
                            Message = p.Message,
                            Date = p.Date,
                            Profile = u.Profile,
-                           MovieId = p.MovieId
+                           MovieId = p.MovieId,
+                           UserId = u.Id
                        }).ToList();
             return new JsonResult(all);
         }

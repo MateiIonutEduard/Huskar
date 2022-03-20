@@ -21,6 +21,7 @@
 
         int auth = 1;
         if (!string.IsNullOrEmpty(profile)) auth = 2;
+        else if (User.Identity.AuthenticationType?.CompareTo("Instagram") == 0) auth = 3;
         var res = await client.GetAsync($"https://localhost:7183/me?name={name}&auth={auth}");
         string str = await res.Content.ReadAsStringAsync();
         User user = null;
@@ -67,8 +68,8 @@
                                     <li><a class="dropdown-item text-warning" href="/GoogleLogin">
                                             <i class="fa fa-brands fa-google text-warning"></i>&nbsp; Google
                                         </a></li>
-                                    <li><a class="dropdown-item text-warning" href="/signin-instagram">
-                                            <i class="fa fa-brands fa-linkedln text-success"></i>&nbsp; Instagram
+                                    <li><a class="dropdown-item text-success" href="/signin-instagram">
+                                            <i class="fa fa-instagram text-success"></i>&nbsp; Instagram
                                         </a></li>
                                 }
                                 else {
