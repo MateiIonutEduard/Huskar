@@ -29,9 +29,17 @@ namespace Huskar.Controllers
             return View(array);
         }
 
-        public IActionResult Results(string name)
+        public async Task<IActionResult> Results(int? page, string[] filter, string? name)
         {
-            return View();
+            var genres = string.Join(", ", filter);
+            if (filter.Length == 0) genres = null;
+
+            if (page != null)
+            {
+                var array = await ms.GetResults(page.Value, name, genres);
+                return Ok(array);
+            }
+            else return Ok();
         }
 
         public async Task<IActionResult> TopRated(int? page)

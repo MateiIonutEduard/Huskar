@@ -11,7 +11,7 @@ namespace Huskar.Data
 
         public DateTime Date { get;set; }
 
-        public int MovieId { get; set; }
+        public long MovieId { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
     }

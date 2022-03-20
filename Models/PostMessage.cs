@@ -8,6 +8,6 @@
         public DateTime Date { get; set; }
         public string Profile { get; set; }
         public int UserId { get; set; }
-        public int MovieId { get; set; }
+        public long MovieId { get; set; }
     }
 }

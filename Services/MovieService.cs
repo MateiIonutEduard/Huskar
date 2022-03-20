@@ -8,16 +8,113 @@ namespace Huskar.Services
     public class MovieService
     {
         private string token;
+        private HttpClient client;
         public MovieService(IConfiguration config)
         {
             token = config["AppSettings:api_key"];
+            client = new HttpClient();
+        }
+        #region UPDATE
+        public async Task<(int, int)> GetFilterPages(string genres)
+        {
+            string url = $"https://api.themoviedb.org/3/discover/movie?api_key={token}&language=en-US&with_genres={genres}";
+            var response = await client.GetAsync(url);
+            var buffer = await response.Content.ReadAsStringAsync();
+
+            var obj = JObject.Parse(buffer);
+            int pages = int.Parse(obj["total_pages"].ToString());
+            int total = int.Parse(obj["total_results"].ToString());
+            return (pages, total);
         }
 
+        public async Task<MovieModel[]> GetFilterResults(int page, string genres)
+        {
+            string url = $"https://api.themoviedb.org/3/discover/movie?api_key={token}&language=en-US&page={page}&with_genres={genres}";
+            var response = await client.GetAsync(url);
+
+            var buffer = await response.Content.ReadAsStringAsync();
+            var list = new List<MovieModel>();
+            var obj = JObject.Parse(buffer);
+
+            var array = JsonConvert.DeserializeObject<MovieModel[]>(obj["results"].ToString());
+            list.AddRange(array);
+
+            return list.ToArray();
+        }
+
+        public async Task<(int, int)> GetSearchPages(string name)
+        {
+            string url = $"https://api.themoviedb.org/3/search/movie?query={name}&api_key={token}&language=en-US";
+            var response = await client.GetAsync(url);
+            var buffer = await response.Content.ReadAsStringAsync();
+
+            var obj = JObject.Parse(buffer);
+            int pages = int.Parse(obj["total_pages"].ToString());
+            int total = int.Parse(obj["total_results"].ToString());
+            return (pages, total);
+        }
+
+        public async Task<MovieModel[]> GetSearchResults(int page, string name)
+        {
+            string url = $"https://api.themoviedb.org/3/search/movie?query={name}&api_key={token}&language=en-US";
+            var response = await client.GetAsync(url);
+            var buffer = await response.Content.ReadAsStringAsync();
+
+            var list = new List<MovieModel>();
+            var obj = JObject.Parse(buffer);
+
+            var array = JsonConvert.DeserializeObject<MovieModel[]>(obj["results"].ToString());
+            list.AddRange(array);
+
+            return list.ToArray();
+        }
+
+        public async Task<MovieModel[]> GetResults(int page, string? name, string? genres)
+        {
+            if(!string.IsNullOrEmpty(genres))
+            {
+                var list = await GetFilterResults(page, genres);
+                var filter = await GetFilterPages(genres);
+                
+                if (!string.IsNullOrEmpty(name))
+                {
+                    var total = new List<MovieModel>();
+                    int n = filter.Item1;
+                    int k = 1;
+
+                    while (k < n)
+                    {
+                        list = await GetFilterResults(k, genres);
+                        var array = list.Where(m => m.title.Contains(name))
+                            .ToArray();
+
+                        total.AddRange(array);
+                        k++;
+                    }
+
+                    return total.ToArray();
+                }
+                else return list;
+            }
+            else
+            {
+                if(!string.IsNullOrEmpty(name))
+                {
+                    var list = await GetSearchResults(page, name);
+                    return list;
+                }
+                else
+                {
+                    var list = new MovieModel[0];
+                    return list;
+                }
+            }
+        }
+        #endregion
+        #region WORK_DONE
         public async Task<int> GetPageCount()
         {
-            var client = new HttpClient();
             var url = $"https://api.themoviedb.org/3/movie/top_rated?api_key={token}&language=en-US";
-
             var response = await client.GetAsync(url);
             var buffer = await response.Content.ReadAsStringAsync();
 
@@ -50,7 +147,7 @@ namespace Huskar.Services
         {
             string str = $"https://api.themoviedb.org/3/movie/{id}?api_key={token}&language=en-US";
             var request = new HttpRequestMessage(HttpMethod.Get, str);
-            var client = new HttpClient();
+            
             var response = await client.SendAsync(request);
             var buffer = await response.Content.ReadAsStringAsync();
             var movie = JsonConvert.DeserializeObject<MovieModel>(buffer);
@@ -85,7 +182,7 @@ namespace Huskar.Services
                 backdrops = backdrops.ToArray(),
                 posters = posters.ToArray(),
                 people = persons,
-                release_date = DateOnly.FromDateTime(movie.release_date)
+                release_date = DateOnly.FromDateTime(movie.release_date.Value)
             };
 
             return obj;
@@ -93,7 +190,6 @@ namespace Huskar.Services
 
         public async Task<int> UpcomingPages()
         {
-            var client = new HttpClient();
             var url = $"https://api.themoviedb.org/3/movie/upcoming?api_key={token}&language=en-US";
             var response = await client.GetAsync(url);
             var buffer = await response.Content.ReadAsStringAsync();
@@ -105,9 +201,7 @@ namespace Huskar.Services
 
         public async Task<MovieModel[]> GetUpcoming(int page)
         {
-            var client = new HttpClient();
             string str = $"https://api.themoviedb.org/3/movie/upcoming?api_key={token}&language=en-US&page={page}";
-            
             var response = await client.GetAsync(str);
             var buffer = await response.Content.ReadAsStringAsync();
 
@@ -124,7 +218,7 @@ namespace Huskar.Services
         {
             string str = $"https://api.themoviedb.org/3/movie/top_rated?api_key={token}&language=en-US&page={page}";
             var request = new HttpRequestMessage(HttpMethod.Get, str);
-            var client = new HttpClient();
+            
             var response = await client.SendAsync(request);
             var buffer = await response.Content.ReadAsStringAsync();
 
@@ -136,5 +230,6 @@ namespace Huskar.Services
 
             return list.ToArray();
         }
+        #endregion
     }
 }
