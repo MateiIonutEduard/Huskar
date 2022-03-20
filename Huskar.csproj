@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.Instagram" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

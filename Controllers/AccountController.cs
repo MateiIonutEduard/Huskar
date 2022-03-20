@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
+using AspNet.Security.OAuth.Instagram;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -18,6 +19,61 @@ namespace Huskar.Controllers
         private MovieContext db;
         public AccountController(MovieContext db)
         { this.db = db; }
+
+        [Route("/signin-instagram")]
+        public async Task InstagramLogin()
+        {
+            await HttpContext.ChallengeAsync("Instagram", new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("Redirect")
+            });
+        }
+
+        public async Task<string> FacebookProfile(string id, string token)
+        {
+            string str = $"https://graph.facebook.com/{id}?fields=picture&access_token={token}";
+            var client = new HttpClient();
+            var res = await client.GetAsync(str);
+            var data = await res.Content.ReadAsStringAsync();
+            dynamic obj = JsonConvert.DeserializeObject(data);
+            return obj.picture.data.url.ToString();
+        }
+
+        public async Task<string> InstagramProfile(string name, string token)
+        {
+            string str = $"https://www.instagram.com/{name}/?__a=1";
+            var client = new HttpClient();
+            var res = await client.GetAsync(str);
+            var data = await res.Content.ReadAsStringAsync();
+            dynamic obj = JsonConvert.DeserializeObject(data);
+            return obj.graphql.user.profile_pic_url.ToString();
+        }
+
+        public async Task<IActionResult> Redirect()
+        {
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var name = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+            string picture = await InstagramProfile(name, token);
+
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var user = db.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 3);
+            var identifier = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Name = name,
+                    Profile = picture,
+                    AuthModel = 1
+                };
+
+                db.Users.Add(user);
+                await db.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
 
         [HttpGet, Route("/me")]
         public async Task<IActionResult> GetUser(string name, int auth)
@@ -88,8 +144,10 @@ namespace Huskar.Controllers
 
             var user = db.Users.FirstOrDefault(u => u.Name.CompareTo(str) == 0 && u.AuthModel == 1);
             var identifier = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var picture = $"https://graph.facebook.com/{identifier}/picture?type=large";
             
+            var token = await HttpContext.GetTokenAsync("access_token");
+            var picture = await FacebookProfile(identifier, token);
+
             if (user == null)
             {
                 user = new User
@@ -103,7 +161,7 @@ namespace Huskar.Controllers
                 await db.SaveChangesAsync();
             }
 
-            return RedirectToAction("TopRated", "Home");
+            return RedirectToAction("Index", "Home");
         }
 
         [Route("/signout")]

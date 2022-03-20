@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Huskar.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -21,6 +22,15 @@ builder.Services.AddDbContext<MovieContext>(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddInstagram(options =>
+            {
+                options.ClientId = config["Instagram:ClientId"];
+                options.ClientSecret = config["Instagram:ClientSecret"];
+                options.CallbackPath = "/Redirect";
+                options.Scope.Add("user_media");
+                options.Fields.Add("profile_picture");
+                options.SaveTokens = true;
             })
             .AddGoogle(options =>
             {
@@ -43,6 +53,7 @@ builder.Services.AddDbContext<MovieContext>(options =>
                options.ClientSecret = FBAuthNSection["AppSecret"];
                options.Scope.Add("public_profile");
                options.Fields.Add("picture");
+               options.SaveTokens = true;
            });
 
 builder.Services.AddSingleton<MovieService>();
