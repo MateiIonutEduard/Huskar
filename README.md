@@ -14,6 +14,17 @@ using the <a href="themoviedb.org">themoviedb.org</a> API:
 > No passwords or other sensitive data are stored in the database of users connected <br>through Facebook and Google accounts.
 
 ## Project Setup
+<b>Package Manager Console</b>
+```powershell
+PM> Update-Database
+PM> Remove-Migration
 ```
+<br/>
+<b>If you use CLI, open up terminal</b>:
+
+```shell
+
+> dotnet ef database update
+> dotnet ef migrations remove
 
 ```
