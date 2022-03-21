@@ -9,7 +9,7 @@ using the <a href="themoviedb.org">themoviedb.org</a> API:
 * As a locally registered user I should be able to leave a comment on a movie in a local comments database.<br>
 
 ## Notes
-> User authentication is done externally, based on social media accounts (Facebook & Google)<br>
+> User authentication is done externally, based on social media accounts (Facebook, Google, Instagram)<br>
 > Movie data is not stored in the database, it is retrieved using the existing API.<br>
 > No passwords or other sensitive data are stored in the database of users connected <br>through Facebook and Google accounts.
 
