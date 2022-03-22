@@ -1,4 +1,5 @@
-﻿using Huskar.Models;
+﻿using System.Linq;
+using Huskar.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 #pragma warning disable
@@ -90,6 +91,18 @@ namespace Huskar.Services
             return n == len;
         }
 
+        private bool Exists(List<MovieModel> list, MovieModel movie)
+        {
+            int j;
+            int n = list.Count;
+            long id = movie.id;
+
+            for(j = 0; j < n; j++)
+                if (id == list[j].id) return true;
+
+            return false;
+        }
+
         public async Task<(MovieModel[], int)> GetResults(int page, string name, string genres)
         {
            MovieModel[] list;
@@ -107,8 +120,11 @@ namespace Huskar.Services
                 while (k <= n)
                 {
                     list = await GetSearchResults(k, name);
-                    var array = list.Where(m => HasFilters(m.genre_ids, genres));
-                    total.AddRange(array);
+                    var array = list.Where(m => HasFilters(m.genre_ids, genres))
+                            .ToArray();
+
+                    var data = array.Where(m => !Exists(total, m)).ToList();
+                    total.AddRange(data);
                     k++;
                 }
             }
@@ -120,8 +136,11 @@ namespace Huskar.Services
                 while (k <= n)
                 {
                     list = await GetFilterResults(k, genres);
-                    var array = list.Where(m => m.title.Contains(name));
-                    total.AddRange(array);
+                    var array = list.Where(m => m.title.Contains(name))
+                            .ToArray();
+
+                    var data = array.Where(m => !Exists(total, m)).ToList();
+                    total.AddRange(data);
                     k++;
                 }
             }
