@@ -1,5 +1,6 @@
 ﻿using Huskar.Data;
 using Huskar.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,7 @@ namespace Huskar.Controllers
             return new JsonResult(all);
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<IActionResult> Post(int UserId, string Message, int MovieId)
         {
             var post = await db.Posts.FirstOrDefaultAsync(p => p.UserId == UserId && p.Message.CompareTo(Message) == 0);
@@ -52,7 +53,7 @@ namespace Huskar.Controllers
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize]
         public async Task<IActionResult> Remove(int PostId)
         {
             var post = await db.Posts.FirstOrDefaultAsync(p => p.Id == PostId);
