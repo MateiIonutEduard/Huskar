@@ -57,6 +57,7 @@ builder.Services.AddDbContext<MovieContext>(options =>
            });
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddSingleton<MovieService>();
 var app = builder.Build();
 

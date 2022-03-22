@@ -7,13 +7,13 @@ namespace Huskar.Services
 {
     public class AccountService : IAccountService
     {
-        readonly MovieContext movieContext;
-        public AccountService(MovieContext movieContext)
-        { this.movieContext = movieContext; }
+        readonly MovieContext db;
+        public AccountService(MovieContext db)
+        { this.db = db; }
 
         public async Task<User> GetUser(string name, int auth)
         {
-            var user = await movieContext.Users.
+            var user = await db.Users.
                 FirstOrDefaultAsync(u => u.Name.CompareTo(name) == 0 && u.AuthModel == auth);
 
             return user;
@@ -22,7 +22,7 @@ namespace Huskar.Services
         public async Task FacebookSignIn(string id, string name, string token)
         {
             string profile = await FacebookProfile(id, token);
-            var user = movieContext.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 1);
+            var user = db.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 1);
 
             if (user == null)
             {
@@ -33,22 +33,22 @@ namespace Huskar.Services
                     AuthModel = 1
                 };
 
-                movieContext.Users.Add(user);
-                await movieContext.SaveChangesAsync();
+                db.Users.Add(user);
+                await db.SaveChangesAsync();
             }
             else
             {
                 if(user.Profile.CompareTo(profile) != 0)
                 {
                     user.Profile = profile;
-                    await movieContext.SaveChangesAsync();
+                    await db.SaveChangesAsync();
                 }
             }
         }
 
         public async Task GoogleSignIn(string name, string profile)
         {
-            var user = movieContext.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 2);
+            var user = db.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 2);
 
             if (user == null)
             {
@@ -59,22 +59,22 @@ namespace Huskar.Services
                     AuthModel = 2
                 };
 
-                movieContext.Users.Add(user);
-                await movieContext.SaveChangesAsync();
+                db.Users.Add(user);
+                await db.SaveChangesAsync();
             }
             else
             {
                 if(user.Profile.CompareTo(profile) != 0)
                 {
                     user.Profile = profile;
-                    await movieContext.SaveChangesAsync();
+                    await db.SaveChangesAsync();
                 }
             }
         }
 
         public async Task InstagramSignIn(string name)
         {
-            var user = movieContext.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 3);
+            var user = db.Users.FirstOrDefault(u => u.Name.CompareTo(name) == 0 && u.AuthModel == 3);
             var picture = await InstagramProfile(name);
 
             if (user == null)
@@ -86,15 +86,15 @@ namespace Huskar.Services
                     AuthModel = 3
                 };
 
-                movieContext.Users.Add(user);
-                await movieContext.SaveChangesAsync();
+                db.Users.Add(user);
+                await db.SaveChangesAsync();
             }
             else
             {
                 if(user.Profile.CompareTo(picture) != 0)
                 {
                     user.Profile = picture;
-                    await movieContext.SaveChangesAsync();
+                    await db.SaveChangesAsync();
                 }
             }
         }
