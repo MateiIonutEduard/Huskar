@@ -9,6 +9,7 @@
 
         public string backdrop_path { get; set; }
         public string poster_path { get; set; }
+        public int[] genre_ids { get; set; }
 
         public DateTime? release_date { get; set; }
     }

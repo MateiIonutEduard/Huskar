@@ -69,45 +69,89 @@ namespace Huskar.Services
             return list.ToArray();
         }
 
-        public async Task<MovieModel[]> GetResults(int page, string? name, string? genres)
+        private bool HasFilters(int[] buf, string genres)
         {
-            if(!string.IsNullOrEmpty(genres))
+            string[] all = genres.Split(", ");
+            int len = all.Length;
+
+            int size = buf.Length;
+            int n = 0;
+
+            if (len > buf.Length) return false;
+
+            for (int j = 0; j < len; j++)
             {
-                var list = await GetFilterResults(page, genres);
-                var filter = await GetFilterPages(genres);
-                
-                if (!string.IsNullOrEmpty(name))
+                int filter = int.Parse(all[j]);
+
+                for (int k = 0; k < size; k++)
+                    if (filter == buf[k]) n++;
+            }
+
+            return n == len;
+        }
+
+        public async Task<(MovieModel[], int)> GetResults(int page, string name, string genres)
+        {
+           MovieModel[] list;
+           var filter = await GetFilterPages(genres);
+
+            var search_filter = await GetSearchPages(name);
+            var total = new List<MovieModel>();
+            int k = 1, n;
+
+            if (search_filter.Item2 < filter.Item2)
+            {
+                // search results are lesser
+                n = search_filter.Item1;
+
+                while (k <= n)
                 {
-                    var total = new List<MovieModel>();
-                    int n = filter.Item1;
-                    int k = 1;
-
-                    while (k < n)
-                    {
-                        list = await GetFilterResults(k, genres);
-                        var array = list.Where(m => m.title.Contains(name))
-                            .ToArray();
-
-                        total.AddRange(array);
-                        k++;
-                    }
-
-                    return total.ToArray();
+                    list = await GetSearchResults(k, name);
+                    var array = list.Where(m => HasFilters(m.genre_ids, genres));
+                    total.AddRange(array);
+                    k++;
                 }
-                else return list;
             }
             else
             {
-                if(!string.IsNullOrEmpty(name))
+                // genre filter results are lesser
+                n = filter.Item1;
+
+                while (k <= n)
                 {
-                    var list = await GetSearchResults(page, name);
-                    return list;
+                    list = await GetFilterResults(k, genres);
+                    var array = list.Where(m => m.title.Contains(name));
+                    total.AddRange(array);
+                    k++;
+                }
+            }
+
+            int pages = total.Count / 20;
+            int rem = total.Count % 20;
+            if (rem > 0) pages++;
+
+            if(page <= pages)
+            {
+                int index = 20 * (page - 1);
+                int next = index + 20;
+
+                if (rem > 0 && page == pages)
+                {
+                    list = new MovieModel[rem];
+                    total.CopyTo(index, list, 0, rem);
+                    return (list, pages);
                 }
                 else
                 {
-                    var list = new MovieModel[0];
-                    return list;
+                    list = new MovieModel[20];
+                    total.CopyTo(index, list, 0, 20);
+                    return (list, pages);
                 }
+            }
+            else
+            {
+                list = new MovieModel[0];
+                return (list, 0);
             }
         }
         #endregion

@@ -33,13 +33,37 @@ namespace Huskar.Controllers
         {
             var genres = string.Join(", ", filter);
             if (filter.Length == 0) genres = null;
+            int result = 1;
 
-            if (page != null)
+            if (page != null) result = page.Value;
+            ViewData["pageid"] = result;
+
+            if(!string.IsNullOrEmpty(genres) && string.IsNullOrEmpty(name))
             {
-                var array = await ms.GetResults(page.Value, name, genres);
-                return Ok(array);
+                var res = await ms.GetFilterPages(genres);
+                var array = await ms.GetFilterResults(result, genres);
+                ViewData["pages"] = res.Item1;
+                return View(array);
             }
-            else return Ok();
+            else
+            if(string.IsNullOrEmpty(genres) && !string.IsNullOrEmpty(name))
+            {
+                var res = await ms.GetSearchPages(name);
+                var array = await ms.GetSearchResults(result, name);
+                ViewData["pages"] = res.Item1;
+                return View(array);
+            }
+            else
+            if(string.IsNullOrEmpty(genres) && string.IsNullOrEmpty(name))
+            {
+                ViewData["pages"] = 0;
+                var array = new MovieModel[0];
+                return View(array);
+            }
+
+            var buffer = await ms.GetResults(result, name, genres);
+            ViewData["pages"] = buffer.Item2;
+            return View(buffer.Item1);
         }
 
         public async Task<IActionResult> TopRated(int? page)
