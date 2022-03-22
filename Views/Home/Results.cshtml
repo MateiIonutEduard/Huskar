@@ -1,4 +1,6 @@
-﻿@model MovieModel[]
+﻿@using System.Text
+@using Microsoft.AspNetCore.WebUtilities
+@model MovieModel[]
 
 @{
     #pragma warning disable
@@ -7,15 +9,27 @@
     int pages = int.Parse(ViewData["pages"].ToString());
 
     var name = Context.Request.Query["name"];
-    var filter = Context.Request.Query["filter"];
+    var filter = QueryHelpers.ParseQuery(Context.Request.QueryString.ToString())
+                    .Where(k => k.Key.Contains("filter")).ToList();
 
     bool a = string.IsNullOrEmpty(name);
-    bool b = string.IsNullOrEmpty(filter);
-    string uri = string.Empty;
+    bool b = filter.Count == 0;
+    var sb = new StringBuilder();
 
-    if (!a && b) uri = $"&name={name}";
-    else if(a && !b) uri = $"&filter={filter}";
-    else if(!a && !b) uri = $"&name={name}&filter={filter}";
+    for(int k = 0; k < filter.Count; k++)
+        sb.Append($"{filter[k].Key}={filter[k].Value}&");
+
+    var array = sb.ToString();
+
+    if(filter.Count > 0)
+        array = array.Substring(0, array.Length - 1);
+
+    sb.Clear();
+
+    if (!a && b) sb.Append($"&name={name}");
+    else if(a && !b) sb.Append($"&filter={array}");
+    else if(!a && !b) sb.Append($"&name={name}&filter={array}");
+    string uri = sb.ToString();
 }
 <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
 <div class="jumbotron" style="background-color:#1C1C1C;">

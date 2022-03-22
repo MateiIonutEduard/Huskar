@@ -29,10 +29,10 @@ namespace Huskar.Controllers
             return View(array);
         }
 
-        public async Task<IActionResult> Results(int? page, string[] filter, string? name)
+        public async Task<IActionResult> Results(int? page, IEnumerable<string> filter, string? name)
         {
             var genres = string.Join(", ", filter);
-            if (filter.Length == 0) genres = null;
+            if (filter.Count() == 0) genres = null;
             int result = 1;
 
             if (page != null) result = page.Value;
