@@ -50,11 +50,11 @@
                <div class="col-6"></div>
                <div class="col-2">
                    @if(page_id > 1) {
-                     <a class="btn btn-outline-secondary btn-sm" href="/Home/?page=@(page_id - 1)"> &lt;&lt; </a>
+                     <a class="btn btn-outline-secondary btn-sm" href="/Home/?page=@(page_id - 1)"> &lt;</a>
                    }
-                   <strong class="text-info text-sm-center">@page_id / @pages</strong>
+                   <strong class="text-info text-sm-center">@page_id/@pages</strong>
                    @if(page_id < pages) {
-                     <a class="btn btn-outline-secondary btn-sm" href="/Home/?page=@(page_id + 1)">&gt;&gt;</a>
+                     <a class="btn btn-outline-secondary btn-sm" href="/Home/?page=@(page_id + 1)">&gt;</a>
                    }
                </div>
            </div>

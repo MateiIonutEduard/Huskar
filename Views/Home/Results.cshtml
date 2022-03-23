@@ -28,8 +28,8 @@
     sb.Clear();
 
     if (!a && b) sb.Append($"&name={name}");
-    else if(a && !b) sb.Append($"&filter={array}");
-    else if(!a && !b) sb.Append($"&name={name}&filter={array}");
+    else if(a && !b) sb.Append($"&{array}");
+    else if(!a && !b) sb.Append($"&name={name}&{array}");
     string uri = sb.ToString();
 
     var client = new HttpClient();
@@ -88,12 +88,12 @@
                     {
                         @if (page_id > 1)
                         {
-                            <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id - 1)@uri"> &lt;&lt; </a>
+                            <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id - 1)@uri"> &lt;</a>
                         }
-                        <strong class="text-info text-sm-center">@page_id / @pages</strong>
+                        <strong class="text-info text-sm-center">@page_id/@pages</strong>
                         @if (page_id < pages)
                         {
-                            <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id + 1)@uri">&gt;&gt;</a>
+                            <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id + 1)@uri">&gt;</a>
                         }
                     }
                 </div>
