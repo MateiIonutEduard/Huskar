@@ -3,19 +3,16 @@ using Huskar.Models;
 using Huskar.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+#pragma warning disable
 
 namespace Huskar.Controllers
 {
     public class HomeController : Controller
     {
-        private MovieContext db;
-        private MovieService ms;
+        private IMovieService ms;
 
-        public HomeController(MovieContext db, MovieService ms)
-        {
-            this.db = db;
-            this.ms = ms;
-        }
+        public HomeController(IMovieService ms)
+        { this.ms = ms; }
 
         public async Task<IActionResult> Index(int? page)
         {
@@ -27,6 +24,12 @@ namespace Huskar.Controllers
 
             var array = await ms.GetUpcoming(result);
             return View(array);
+        }
+
+        public async Task<IActionResult> Genres()
+        {
+            var list = await ms.AllGenres();
+            return Ok(list);
         }
 
         public async Task<IActionResult> Results(int? page, IEnumerable<string> filter, string? name)

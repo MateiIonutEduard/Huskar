@@ -41,6 +41,26 @@ namespace Huskar.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet, Route("/avatar")]
+        public async Task<IActionResult> Avatar(int id)
+        {
+            var image = await account.GetProfile(id);
+            if (image != null) return File(image, "image/png");
+            return NotFound();
+        }
+
+        [HttpGet, Route("/profile")]
+        public async Task<IActionResult> GetProfile(string name, int auth)
+        {
+            if(!string.IsNullOrEmpty(name))
+            {
+                var image = await account.GetProfile(name, auth);
+                if(image != null) return File(image, "image/png");
+            }
+
+            return NotFound();
+        }
+
         [HttpGet, Route("/me")]
         public async Task<IActionResult> GetUser(string name, int auth)
         {

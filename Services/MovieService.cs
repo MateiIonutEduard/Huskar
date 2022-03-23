@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Huskar.Services
 {
-    public class MovieService
+    public class MovieService : IMovieService
     {
         private string token;
         private HttpClient client;
@@ -15,7 +15,19 @@ namespace Huskar.Services
             token = config["AppSettings:api_key"];
             client = new HttpClient();
         }
-        #region UPDATE
+        
+        public async Task<Genre[]> AllGenres()
+        {
+            string url = $"https://api.themoviedb.org/3/genre/movie/list?api_key=67b8ec3a134e7dd2607506cc43b34695&language=en-US";
+            var response = await client.GetAsync(url);
+
+            var buffer = await response.Content.ReadAsStringAsync();
+            var obj = JObject.Parse(buffer);
+
+            var list = JsonConvert.DeserializeObject<Genre[]>(obj["genres"].ToString());
+            return list;
+        }
+
         public async Task<(int, int)> GetFilterPages(string genres)
         {
             string url = $"https://api.themoviedb.org/3/discover/movie?api_key={token}&language=en-US&with_genres={genres}";
@@ -173,7 +185,7 @@ namespace Huskar.Services
                 return (list, 0);
             }
         }
-        #endregion
+        
         #region WORK_DONE
         public async Task<int> GetPageCount()
         {

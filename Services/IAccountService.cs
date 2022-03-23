@@ -4,6 +4,8 @@ namespace Huskar.Services
 {
     public interface IAccountService
     {
+        public Task<byte[]> GetProfile(int Id);
+        public Task<byte[]> GetProfile(string name, int auth);
         public Task<User> GetUser(string name, int auth);
         public Task FacebookSignIn(string id, string name, string token);
         public Task GoogleSignIn(string name, string profile);

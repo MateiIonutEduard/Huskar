@@ -11,6 +11,33 @@ namespace Huskar.Services
         public AccountService(MovieContext db)
         { this.db = db; }
 
+        public async Task<byte[]> GetProfile(int Id)
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Id == Id);
+
+            if (user != null)
+            {
+                var client = new HttpClient();
+                var res = await client.GetAsync(user.Profile);
+                byte[] buffer = await res.Content.ReadAsByteArrayAsync();
+                return buffer;
+            }
+
+            return null;
+        }
+
+        public async Task<byte[]> GetProfile(string name, int auth)
+        {
+            var user = await db.Users.
+                FirstOrDefaultAsync(u => u.Name.CompareTo(name) == 0 && u.AuthModel == auth);
+
+            var client = new HttpClient();
+            var res = await client.GetAsync(user.Profile);
+
+            byte[] buffer = await res.Content.ReadAsByteArrayAsync();
+            return buffer;
+        }
+
         public async Task<User> GetUser(string name, int auth)
         {
             var user = await db.Users.

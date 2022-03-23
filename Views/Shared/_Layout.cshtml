@@ -53,7 +53,7 @@
                            <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 @if (user != null)
                                 {
-                                    <img class="rounded-circle" src="@user.Profile" width = "32" height="32"/> <b class="text-light">@user.Name</b>
+                                    <img class="rounded-circle" src="/profile/?name=@name&auth=@auth" width = "32" height="32"/> <b class="text-light">@user.Name</b>
                                 } else
                                 {
                                     <i class="fa fa-users text-light"></i> <b class="text-light"> Guest</b>
@@ -82,8 +82,8 @@
                     </ul>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <form action="/Home/Results" class="d-flex" method="get">
-                                <input class="form-control me-2" name="name" type="search" placeholder="Search" aria-label="Search">
+                            <form id="box" class="d-flex" method="get">
+                                <input id="search" class="form-control me-2" name="name" type="search" placeholder="Search" aria-label="Search">
                                 <button class="btn alert-info btn-sm" type="submit"><span class="fa fa-search"></span></button>
                             </form>
                         </li>
