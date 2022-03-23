@@ -1,43 +1,65 @@
-﻿@model MovieModel[]
+﻿@using Newtonsoft.Json
+@model MovieModel[]
 
 @{
     #pragma warning disable
     ViewData["Title"] = "Top Rated";
     int page_id = int.Parse(ViewData["pageid"].ToString());
     int pages = int.Parse(ViewData["pages"].ToString());
+
+    var client = new HttpClient();
+    var res = await client.GetAsync("https://localhost:7183/Home/Genres");
+    string data = await res.Content.ReadAsStringAsync();
+    var genres = JsonConvert.DeserializeObject<Genre[]>(data);
 }
 
 <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
-<div class="jumbotron" style="background-color:#1C1C1C;">
-   <h4 style="color:white;" class="text-sm-start">  Top Movies</h4>
-   <div class="list-group">
-        @foreach(var t in Model)
-        {
-                <a href="/Home/Details?id=@t.id" class="list-group-item list-group-item-action">
-                  <div class="row">
-                      <div class="col">
-                         <img src="https://image.tmdb.org/t/p/w500/@t.poster_path" height="120" width="100" style="margin-top: 30px;margin-left:30px;margin-right:20px;" />
-                         <strong class="text-secondary">@t.title</strong>
-                      </div>
-                      <div class="col">
-                           <p>@t.overview</p>
-                      </div>
-                  </div>
-                </a>
-        }
-   </div>
-   <div class="row">
-       <div class="col-4"></div>
-       <div class="col-6"></div>
-       <div class="col-2">
-           @if(page_id > 1) {
-             <a class="btn btn-outline-secondary btn-sm" href="/Home/TopRated?page=@(page_id - 1)"> &lt;&lt; </a>
-           }
-           <strong class="text-info text-sm-center">@page_id / @pages</strong>
-           @if(page_id < pages) {
-             <a class="btn btn-outline-secondary btn-sm" href="/Home/TopRated?page=@(page_id + 1)">&gt;&gt;</a>
-           }
-       </div>
-   </div>
-   <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
+<div class="row">
+    <div class="col-2">
+        <select class="form-select" id="genres" type="checkbox" aria-label="All Genres" multiple>
+            @foreach(var genre in genres)
+            {
+                <option value="@genre.id">@genre.name</option>
+            }
+        </select><br/>
+        <center><button id="filter" class="btn btn-success btn-sm">Filter</button></center>
+        <div class="content-right"></div>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-8">
+        <div class="jumbotron" style="background-color:#1C1C1C;">
+           <h4 style="color:white;" class="text-sm-start">  Top Movies</h4>
+           <div class="list-group">
+                @foreach(var t in Model)
+                {
+                        <a href="/Home/Details?id=@t.id" class="list-group-item list-group-item-action">
+                          <div class="row">
+                              <div class="col">
+                                 <img src="https://image.tmdb.org/t/p/w500/@t.poster_path" height="120" width="100" style="margin-top: 30px;margin-left:30px;margin-right:20px;" />
+                                 <strong class="text-secondary">@t.title</strong>
+                              </div>
+                              <div class="col">
+                                   <p>@t.overview</p>
+                              </div>
+                          </div>
+                        </a>
+                }
+           </div>
+           <div class="row">
+               <div class="col-4"></div>
+               <div class="col-6"></div>
+               <div class="col-2">
+                   @if(page_id > 1) {
+                     <a class="btn btn-outline-secondary btn-sm" href="/Home/TopRated?page=@(page_id - 1)"> &lt;&lt; </a>
+                   }
+                   <strong class="text-info text-sm-center">@page_id / @pages</strong>
+                   @if(page_id < pages) {
+                     <a class="btn btn-outline-secondary btn-sm" href="/Home/TopRated?page=@(page_id + 1)">&gt;&gt;</a>
+                   }
+               </div>
+           </div>
+           <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
+        </div>
+    </div>
+    <div class="col-1"></div>
 </div>

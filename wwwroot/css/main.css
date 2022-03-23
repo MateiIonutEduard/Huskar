@@ -84,3 +84,7 @@ body {
     color: white;
     
 }
+
+.content-right {
+    border-right: 1px dashed #333;
+}

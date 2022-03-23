@@ -1,5 +1,6 @@
 ﻿@using System.Text
 @using Microsoft.AspNetCore.WebUtilities
+@using Newtonsoft.Json
 @model MovieModel[]
 
 @{
@@ -30,54 +31,75 @@
     else if(a && !b) sb.Append($"&filter={array}");
     else if(!a && !b) sb.Append($"&name={name}&filter={array}");
     string uri = sb.ToString();
+
+    var client = new HttpClient();
+    var res = await client.GetAsync("https://localhost:7183/Home/Genres");
+    string data = await res.Content.ReadAsStringAsync();
+    var genres = JsonConvert.DeserializeObject<Genre[]>(data);
 }
 <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
-<div class="jumbotron" style="background-color:#1C1C1C;">
-   <h4 style="color:white;" class="text-sm-start">  Search Results</h4>
-    @if (Model.Length > 0)
-    {
-        <div class="list-group">
-            @foreach (var t in Model)
+<div class="row">
+   <div class="col-2">
+        <select class="form-select" id="genres" type="checkbox" aria-label="All Genres" multiple>
+            @foreach(var genre in genres)
             {
-                <a href="/Home/Details?id=@t.id" class="list-group-item list-group-item-action">
-                    <div class="row">
-                        <div class="col">
-                            <img src="https://image.tmdb.org/t/p/w500/@t.poster_path" height="120" width="100" style="margin-top: 30px;margin-left:30px;margin-right:20px;" />
-                            <strong class="text-secondary">@t.title</strong>
-                        </div>
-                        <div class="col">
-                            <p>@t.overview</p>
-                        </div>
-                    </div>
-                </a>
+                <option value="@genre.id">@genre.name</option>
             }
-        </div>
-    } else
-    {
-        <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <strong class="text-danger">Found Results</strong><br/> Unfortunately, we were unable to find the desired results! <a href = "/Home/" class="text-info" style="text-decoration: none;"><b>Go Back</b></a>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
-    }
-    <div class="row">
-       <div class="col-4"></div>
-       <div class="col-6"></div>
-       <div class="col-2">
-            @if (pages > 0)
+        </select><br/>
+        <center><button id="filter" class="btn btn-success btn-sm">Filter</button></center>
+        <div class="content-right"></div>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-8">
+        <div class="jumbotron" style="background-color:#1C1C1C;">
+           <h4 style="color:white;" class="text-sm-start">  Search Results</h4>
+            @if (Model.Length > 0)
             {
-                @if (page_id > 1)
-                {
-                    <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id - 1)@uri"> &lt;&lt; </a>
-                }
-                <strong class="text-info text-sm-center">@page_id / @pages</strong>
-                @if (page_id < pages)
-                {
-                    <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id + 1)@uri">&gt;&gt;</a>
-                }
+                <div class="list-group">
+                    @foreach (var t in Model)
+                    {
+                        <a href="/Home/Details?id=@t.id" class="list-group-item list-group-item-action">
+                            <div class="row">
+                                <div class="col">
+                                    <img src="https://image.tmdb.org/t/p/w500/@t.poster_path" height="120" width="100" style="margin-top: 30px;margin-left:30px;margin-right:20px;" />
+                                    <strong class="text-secondary">@t.title</strong>
+                                </div>
+                                <div class="col">
+                                    <p>@t.overview</p>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            } else
+            {
+                <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <strong class="text-danger">Found Results</strong><br/> Unfortunately, we were unable to find the desired results! <a href = "/Home/" class="text-info" style="text-decoration: none;"><b>Go Back</b></a>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <hr class="bg-danger border-2 border-top" style="visibility: hidden;">
             }
+            <div class="row">
+               <div class="col-4"></div>
+               <div class="col-6"></div>
+               <div class="col-2">
+                    @if (pages > 0)
+                    {
+                        @if (page_id > 1)
+                        {
+                            <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id - 1)@uri"> &lt;&lt; </a>
+                        }
+                        <strong class="text-info text-sm-center">@page_id / @pages</strong>
+                        @if (page_id < pages)
+                        {
+                            <a class="btn btn-outline-secondary btn-sm" href="/Home/Results?page=@(page_id + 1)@uri">&gt;&gt;</a>
+                        }
+                    }
+                </div>
+           </div>
+           <br />
         </div>
-   </div>
-   <br />
+    </div>
+    <div class="col-1"></div>
 </div>
