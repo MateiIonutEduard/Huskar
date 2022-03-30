@@ -56,7 +56,7 @@ builder.Services.AddDbContext<MovieContext>(options =>
                options.SaveTokens = true;
            });
 
-builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddSingleton<IMovieService, MovieService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPostService, PostService>();
 var app = builder.Build();
