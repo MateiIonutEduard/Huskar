@@ -14,6 +14,8 @@ using the <a href="themoviedb.org">themoviedb.org</a> API:
 > No passwords or other sensitive data are stored in the database of users connected <br>through Facebook and Google accounts.
 
 ## Project Setup
+Before running the application, you need to download MySQL, from [XAMPP](https://www.apachefriends.org/download.html) website.<br>
+After that create the database from the included migration scheme, as shown below.<br><br><br>
 <b>Package Manager Console</b>
 ```powershell
 PM> Update-Database
